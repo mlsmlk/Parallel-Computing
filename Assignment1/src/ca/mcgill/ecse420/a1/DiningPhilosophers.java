@@ -8,12 +8,10 @@ public class DiningPhilosophers {
 
 	public static void main(String[] args) {
 
-
 		int numberOfPhilosophers = 5;
 
 		Philosopher[] philosophers = new Philosopher[numberOfPhilosophers];
 		Object[] chopsticks = new Object[numberOfPhilosophers];
-
 
 		for (int i = 0; i < chopsticks.length; i++) {
 			chopsticks[i] = new Object();
@@ -25,24 +23,22 @@ public class DiningPhilosophers {
 
 			philosophers[i] = new Philosopher(leftChopstick, rightChopstick);
 
-			Thread t
-					= new Thread(philosophers[i], "Philosopher " + (i + 1));
+			Thread t = new Thread(philosophers[i], "Philosopher " + (i + 1));
 			t.start();
 		}
 	}
 
-
-	void put_chop(String put) throws InterruptedException {
+	static void put_chop(String put) throws InterruptedException {
 		System.out.println(Thread.currentThread().getName() + " " + put);
 		Thread.sleep(((int) (Math.random() * 100)));
 	}
 
-	private void take_chop(String take) throws InterruptedException {
+	private static void take_chop(String take) throws InterruptedException {
 		System.out.println(Thread.currentThread().getName() + " " + take);
 		Thread.sleep(((int) (Math.random() * 100)));
 	}
 
-	private void thinking(String think) throws InterruptedException {
+	private static void thinking(String think) throws InterruptedException {
 		System.out.println(Thread.currentThread().getName() + " " + think);
 		Thread.sleep(((int) (Math.random() * 100)));
 	}
@@ -56,7 +52,6 @@ public class DiningPhilosophers {
 			this.leftChopstick = leftChopstick;
 			this.rightChopstick = rightChopstick;
 		}
-
 
 		@Override
 		public void run() {
@@ -99,7 +94,8 @@ public class DiningPhilosophers {
 
 
 			}
-		} catch(
+		}catch(
+
 		InterruptedException e)
 
 		{
@@ -110,7 +106,6 @@ public class DiningPhilosophers {
 }
 
 // 2 states-> thinking and eating
-
 
 // how to prevent a/the deadlock
 //add some priority, have a queue
