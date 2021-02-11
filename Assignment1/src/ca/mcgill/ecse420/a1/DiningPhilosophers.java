@@ -8,10 +8,12 @@ public class DiningPhilosophers {
 
 	public static void main(String[] args) {
 
+
 		int numberOfPhilosophers = 5;
 
 		Philosopher[] philosophers = new Philosopher[numberOfPhilosophers];
 		Object[] chopsticks = new Object[numberOfPhilosophers];
+
 
 		for (int i = 0; i < chopsticks.length; i++) {
 			chopsticks[i] = new Object();
@@ -23,10 +25,12 @@ public class DiningPhilosophers {
 
 			philosophers[i] = new Philosopher(leftChopstick, rightChopstick);
 
-			Thread t = new Thread(philosophers[i], "Philosopher " + (i + 1));
+			Thread t
+					= new Thread(philosophers[i], "Philosopher " + (i + 1));
 			t.start();
 		}
 	}
+
 
 	static void put_chop(String put) throws InterruptedException {
 		System.out.println(Thread.currentThread().getName() + " " + put);
@@ -53,6 +57,7 @@ public class DiningPhilosophers {
 			this.rightChopstick = rightChopstick;
 		}
 
+
 		@Override
 		public void run() {
 			try {
@@ -62,53 +67,53 @@ public class DiningPhilosophers {
 					synchronized (leftChopstick) {
 						take_chop(
 								System.nanoTime()
-										+ ": Picked up left fork");
+										+ ": Picked up left chop");
 						synchronized (rightChopstick) {
 							// eating
 							take_chop(
 									System.nanoTime()
-											+ ": Picked up right fork - eating");
+											+ ": Picked up right chop - eating");
 
 							put_chop(
 									System.nanoTime()
-											+ ": Put down right fork");
+											+ ": Put down right chop");
 						}
 
 						// Back to thinking
 						put_chop(
 								System.nanoTime()
-										+ ": Put down left fork. Back to thinking");
+										+ ": Put down left chop. Back to thinking");
 
 
 					}
 
 
-					//while running
-					//do stuff, thinking()?
-					//take_fork(i)->left fork
-					//take_fork((i+1)%N)-> right fork. n is number of forks
-					//EAT()
-					//put fork(i)
-					//put fork((i+1)%N)--> mod n
+
 				}
 
 
+			} catch(InterruptedException e) {
+				Thread.currentThread().interrupt();
+				return;
 			}
-		}catch(
+		}
 
-		InterruptedException e)
-
-		{
-			Thread.currentThread().interrupt();
-			return;
 		}
 	}
-}
 
 // 2 states-> thinking and eating
+
 
 // how to prevent a/the deadlock
 //add some priority, have a queue
 //locking needs to be atomic
 //when one program is asking, the other cannot gain it
 //
+
+//while running
+//do stuff, thinking()?
+//take_fork(i)->left fork
+//take_fork((i+1)%N)-> right fork. n is number of forks
+//EAT()
+//put fork(i)
+//put fork((i+1)%N)--> mod n
