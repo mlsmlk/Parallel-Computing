@@ -5,8 +5,8 @@ import java.util.concurrent.Executors;
 
 public class MatrixMultiplication {
 
-	private static final int NUMBER_THREADS = 1;
-	private static final int MATRIX_SIZE = 2000;
+	private static final int NUMBER_THREADS = 4;
+	private static final int MATRIX_SIZE = 4000;
 
 	public static void main(String[] args) {
 
@@ -14,17 +14,31 @@ public class MatrixMultiplication {
 		double[][] a = generateRandomMatrix(MATRIX_SIZE, MATRIX_SIZE);
 		double[][] b = generateRandomMatrix(MATRIX_SIZE, MATRIX_SIZE);
 
-		// Mark star time for sequential matrix multiplication
-		long startTime = System.currentTimeMillis();
+		long startTime = System.currentTimeMillis(); // Mark star time for sequential matrix multiplication
 		sequentialMultiplyMatrix(a, b);
-		long timeDurationSequential = System.currentTimeMillis() - startTime;
-		System.out.println("Time duration for sequential matrix multiplication: " + timeDurationSequential + "ms");
+		long endTime = System.currentTimeMillis(); // Mark end time for sequential matrix multiplication
+		long timeDuration = calculateTimeDuration(startTime, endTime); // Calculate duration for sequential matrix
+																		// multiplication and print it
+		System.out.println("Time duration for sequential matrix multiplication: " + timeDuration + "ms");
 
-		// Mark star time for parallel matrix multiplication
-		startTime = System.currentTimeMillis();
+		startTime = System.currentTimeMillis(); // Mark star time for parallel matrix multiplication
 		parallelMultiplyMatrix(a, b);
-		long timeDurationParallel = System.currentTimeMillis() - startTime;
-		System.out.println("Time duration for parallel matrix multiplication: " + timeDurationParallel + "ms");
+		endTime = System.currentTimeMillis(); // Mark end time for parallel matrix multiplication
+		timeDuration = calculateTimeDuration(startTime, endTime); // Calculate duration for parallel matrix
+																	// multiplication and print it
+		System.out.println("Time duration for parallel matrix multiplication: " + timeDuration + "ms");
+	}
+
+	/**
+	 * Calculate the time interval between given times and print the result
+	 * 
+	 * @param startTime is the start time
+	 * @param endTime   is the end time
+	 * @return time duration
+	 */
+	public static long calculateTimeDuration(long startTime, long endTime) {
+		return endTime - startTime; // Calculate the time duration in ms
+
 	}
 
 	/**
@@ -36,17 +50,20 @@ public class MatrixMultiplication {
 	 * @return the result of the multiplication
 	 */
 	public static double[][] sequentialMultiplyMatrix(double[][] a, double[][] b) {
-		double[][] resultMatrix = new double[MATRIX_SIZE][MATRIX_SIZE];
-		double temp = 0;
-		for (int i = 0; i < MATRIX_SIZE; i++) {
-			for (int j = 0; j < MATRIX_SIZE; j++) {
-				for (int k = 0; k < MATRIX_SIZE; k++) {
-					temp += a[i][k] * b[k][j];
+		double[][] resultMatrix = new double[MATRIX_SIZE][MATRIX_SIZE]; // Initialize result matrix
+		double temp = 0; // Initialize temporary variable for calculating the total multiplication for
+							// given indices
+		for (int i = 0; i < MATRIX_SIZE; i++) {// For each row of a
+			for (int j = 0; j < MATRIX_SIZE; j++) { // For each column of b
+				for (int k = 0; k < MATRIX_SIZE; k++) { // For each element in ith row of a and jth column of b
+					temp += a[i][k] * b[k][j]; // Multiply elements and add to temp for reaching the final result
 				}
-				resultMatrix[i][j] = temp;
-				temp = 0;
+				resultMatrix[i][j] = temp; // Define found result to necessary index of the result matrix
+				temp = 0; // Reset temp for the next iteration
 			}
 		}
+		// This command is used for debugging and testing purposes
+//		System.out.println(Arrays.deepToString(resultMatrix));
 		return resultMatrix;
 	}
 
@@ -59,21 +76,32 @@ public class MatrixMultiplication {
 	 * @return the result of the multiplication
 	 */
 	public static double[][] parallelMultiplyMatrix(double[][] a, double[][] b) {
-		ExecutorService executor = Executors.newFixedThreadPool(NUMBER_THREADS);
-		double[][] resultMatrix = new double[MATRIX_SIZE][MATRIX_SIZE];
-		for (int i = 0; i < MATRIX_SIZE / 2; i++) {
-			for (int j = 0; j < MATRIX_SIZE / 2; j++) {
-				executor.execute(
-						new ParallelMatrixMultiply(i + MATRIX_SIZE / 2, j + MATRIX_SIZE / 2, a, b, resultMatrix));
+		ExecutorService executor = Executors.newFixedThreadPool(NUMBER_THREADS); // Create fixed thread pool with given
+																					// thread number
+		double[][] resultMatrix = new double[MATRIX_SIZE][MATRIX_SIZE]; // Initialize result matrix
+		for (int i = 0; i < MATRIX_SIZE / 2; i++) { // For each row of a until reaching the half of the matrix
+			for (int j = 0; j < MATRIX_SIZE; j++) { // For each column of b until reaching the half of the matrix
+				// Task 1 handling elements multiplication with the first half of the matrix
 				executor.execute(new ParallelMatrixMultiply(i, j, a, b, resultMatrix));
+				// Task 2 handling elements multiplication with the second half of the matrix
+				executor.execute(new ParallelMatrixMultiply(i + MATRIX_SIZE / 2, j, a, b, resultMatrix));
 			}
 		}
-		// Shut down the executor
-		executor.shutdown();
+		executor.shutdown(); // Shutdown the pool so make sure the output is ready
 		return resultMatrix;
+
 	}
 
-	static class ParallelMatrixMultiply extends Thread {
+	/**
+	 * Define thread task
+	 * 
+	 * @param a            is the first matrix
+	 * @param b            is the second matrix
+	 * @param resultMatrix is the result matrix
+	 * @param i            is the row index for the first matrix
+	 * @param j            is the column index for the second matrix
+	 */
+	static class ParallelMatrixMultiply implements Runnable {
 		private double[][] a;
 		private double[][] b;
 		private double[][] resultMatrix;
@@ -89,11 +117,14 @@ public class MatrixMultiplication {
 			this.resultMatrix = resultMatrix;
 		}
 
+		// Override run for this task
 		public void run() {
 			resultMatrix[i][j] = 0;
-			for (int k = 0; k < MATRIX_SIZE; k++) {
-				resultMatrix[i][j] += a[i][k] * b[k][j];
+			for (int k = 0; k < MATRIX_SIZE; k++) {// For each element in ith row of a and jth column of b
+				resultMatrix[i][j] += a[i][k] * b[k][j]; // Multiply elements and add to result matrix
 			}
+			// This command is used for debugging and testing purposes
+//			System.out.println("Row: " + i + " Column: " + j + " Result: " + resultMatrix[i][j]);
 		}
 	}
 
