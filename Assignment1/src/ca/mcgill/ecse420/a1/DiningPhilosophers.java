@@ -23,8 +23,11 @@ public class DiningPhilosophers {
 			Object leftChopstick = chopsticks[i];
 			Object rightChopstick = chopsticks[(i + 1) % chopsticks.length];
 
-			philosophers[i] = new Philosopher(leftChopstick, rightChopstick);
-
+			if (i == philosophers.length-1) {									 //3.2, this if condition makes such that the last philosopher reaches for the right chop first
+				philosophers[i] = new Philosopher(rightChopstick, leftChopstick);//instead of left. which breaks the circular wait condition and the deadlock
+			} else{
+				philosophers[i] = new Philosopher(leftChopstick, rightChopstick);
+			}
 			Thread t
 					= new Thread(philosophers[i], "Philosopher " + (i + 1));
 			t.start();
