@@ -2,10 +2,10 @@ package ca.mcgill.ecse420.a1;
 
 public class Deadlock {
 
+	//declare resources
 	public static Object resourceA = new Object();
 	public static Object resourceB = new Object();
-	// String resourceA;
-	// String resourceB;
+	
 
 	public static void main(String[] args) {
 		Deadlock ds = new Deadlock();
@@ -22,7 +22,7 @@ public class Deadlock {
 
 			synchronized (resourceB) {
 				// obtained lock on B
-				// DO SOME THING
+				// Do something
 				System.out.println("Thread 1 Obtained Lock on B");
 			}
 		}
@@ -35,7 +35,7 @@ public class Deadlock {
 
 			synchronized (resourceA) {
 				// obtained lock on A
-				// DO SOME THIS
+				// DO something else
 				System.out.println("Thread 2 Obtained Lock on A");
 			}
 		}
