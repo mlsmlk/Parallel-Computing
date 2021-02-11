@@ -8,24 +8,25 @@ public class DiningPhilosophers {
 
 	public static void main(String[] args) {
 
-
+		//number of philosophers n=5
 		int numberOfPhilosophers = 5;
-
+		//initialize array of philosophers with size 5 and same number of chopsticks for the chopsticks array
 		Philosopher[] philosophers = new Philosopher[numberOfPhilosophers];
 		Object[] chopsticks = new Object[numberOfPhilosophers];
 
-
+		//every chopstick has an index 
 		for (int i = 0; i < chopsticks.length; i++) {
 			chopsticks[i] = new Object();
 		}
-
+		//every philosopher has an index and each has a left chopstick and a right chopstick 
 		for (int i = 0; i < philosophers.length; i++) {
+			//define which one is left, which one is left using mod
 			Object leftChopstick = chopsticks[i];
 			Object rightChopstick = chopsticks[(i + 1) % chopsticks.length];
 
-			if (i == philosophers.length-1) {									 //3.2, this if condition makes such that the last philosopher reaches for the right chop first
+			if (i == philosophers.length-1) {					//3.2, this if condition makes such that the last philosopher reaches for the right chop first
 				philosophers[i] = new Philosopher(rightChopstick, leftChopstick);//instead of left. which breaks the circular wait condition and the deadlock
-			} else{
+			} else{ //every other philosopher reaches left one first
 				philosophers[i] = new Philosopher(leftChopstick, rightChopstick);
 			}
 			Thread t
@@ -34,24 +35,24 @@ public class DiningPhilosophers {
 		}
 	}
 
-
+	//put down chopsticks
 	static void put_chop(String put) throws InterruptedException {
 		System.out.println(Thread.currentThread().getName() + " " + put);
 		Thread.sleep(((int) (Math.random() * 100)));
 	}
-
+	//take chopsticks
 	private static void take_chop(String take) throws InterruptedException {
 		System.out.println(Thread.currentThread().getName() + " " + take);
 		Thread.sleep(((int) (Math.random() * 100)));
 	}
-
+	//thinking method
 	private static void thinking(String think) throws InterruptedException {
 		System.out.println(Thread.currentThread().getName() + " " + think);
 		Thread.sleep(((int) (Math.random() * 100)));
 	}
 
 	public static class Philosopher implements Runnable {
-
+		//chopsticks on either side of the philosophers
 		private Object leftChopstick;
 		private Object rightChopstick;
 
@@ -65,7 +66,7 @@ public class DiningPhilosophers {
 		public void run() {
 			try {
 				while (true) {
-
+					//thinking
 					thinking(System.nanoTime() + ": Thinking");
 					synchronized (leftChopstick) {
 						take_chop(
@@ -103,20 +104,3 @@ public class DiningPhilosophers {
 
 		}
 	}
-
-// 2 states-> thinking and eating
-
-
-// how to prevent a/the deadlock
-//add some priority, have a queue
-//locking needs to be atomic
-//when one program is asking, the other cannot gain it
-//
-
-//while running
-//do stuff, thinking()?
-//take_fork(i)->left fork
-//take_fork((i+1)%N)-> right fork. n is number of forks
-//EAT()
-//put fork(i)
-//put fork((i+1)%N)--> mod n
