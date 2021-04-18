@@ -1,3 +1,5 @@
+package ca.mcgill.ecse420.a3;
+
 public class SequentialMatricVectorMultiply {
 
         public static double[] sequentialMultiply(double[][] matrix, double[] vector, int matrix_size) {
