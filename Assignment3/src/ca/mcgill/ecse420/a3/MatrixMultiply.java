@@ -71,5 +71,4 @@ public class MatrixMultiply {
 		}
 		return vector;
 	}
-
 }
