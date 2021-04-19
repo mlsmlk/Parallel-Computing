@@ -3,19 +3,8 @@ package ca.mcgill.ecse420.a3;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-/**
- * @author malki
- *
- * @param <T>
- */
-/**
- * @author malki
- *
- * @param <T>
- */
 public class FineGrainedAlgorithm<T> {
-	private Node head = null;
-	private Lock lock = new ReentrantLock();
+	private Node head;
 
 	/**
 	 * Node definition, the fields were selected according to the add() example in
@@ -26,6 +15,7 @@ public class FineGrainedAlgorithm<T> {
 		T item;
 		int key;
 		Node next;
+		Lock lock = new ReentrantLock();
 
 		public void lock() {
 			lock.lock();
@@ -34,6 +24,13 @@ public class FineGrainedAlgorithm<T> {
 		public void unlock() {
 			lock.unlock();
 		}
+	}
+
+	public FineGrainedAlgorithm() {
+		head = new Node();
+		head.key = Integer.MIN_VALUE;
+		head.next = new Node();
+		head.next.key = Integer.MAX_VALUE;
 	}
 
 	/**
@@ -52,17 +49,18 @@ public class FineGrainedAlgorithm<T> {
 			Node curr = pred.next; // move to next node
 			curr.lock(); // lock the node to prevent any possible removing or editing by another thread.
 			try {
-				while (curr.key < key) { // since the list is built with key ordering, the algorithm can avoid the keys
-											// smaller than the requested item's key
+				while (curr.key < key) { // since the list is built with key ordering, the
+											// algorithm can avoid the keys
+					// smaller than the requested item's key
 					pred.unlock(); // if the first locked node gets in the loop, the algorithm free the node
 									// because it is done with the node
 					pred = curr; // move to next node
 					curr = curr.next;
 					curr.lock(); // lock the second node which is after the second locked node
 				}
-				if (curr.key == key && curr.item == item) { // if the current node key is not smaller than the required
-															// key, it might be the nod the algorithm looks for so check
-															// if the node is matching with the requested item
+				if (curr.key == key) { // if the current node key is not smaller than the required
+										// key, it might be the nod the algorithm looks for so check
+										// if the node is matching with the requested item
 					return true;
 				}
 				return false;
@@ -103,6 +101,7 @@ public class FineGrainedAlgorithm<T> {
 				}
 				Node newNode = new Node();
 				newNode.item = item;
+				newNode.key = item.hashCode();
 				newNode.next = curr;
 				pred.next = newNode;
 				return true;

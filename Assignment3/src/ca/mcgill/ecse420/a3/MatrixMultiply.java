@@ -2,26 +2,49 @@ package ca.mcgill.ecse420.a3;
 
 public class MatrixMultiply {
 
-	private static final int MATRIX_SIZE = 2048;
+	private static final int MATRIX_SIZE = 2000;
 
 	public static void main(String[] args) {
-		double[][] matrix = generateRandomMatrix(MATRIX_SIZE, MATRIX_SIZE);
-		double[] vector = generateRandomVector(MATRIX_SIZE);
 
-		double seqStart = System.nanoTime();
-		double[] seqResult = SequentialMatricVectorMultiply.sequentialMultiply(matrix, vector, MATRIX_SIZE);
-		double seqEnd = System.nanoTime();
+		// Generate two random matrices, same size
+		double[][] a = generateRandomMatrix(MATRIX_SIZE, MATRIX_SIZE);
+		double[] b = generateRandomVector(MATRIX_SIZE);
 
-		double parStart = System.nanoTime();
-		double[] result = ParallelMatrixVectorMultiply.parallelMultiply(matrix, vector, MATRIX_SIZE);
-		double parEnd = System.nanoTime();
+		long startTime = System.currentTimeMillis(); // Mark star time for sequential matrix multiplication
+		SequentialMatrixVectorMultiply.sequentialMultiply(a, b, MATRIX_SIZE);
+		long endTime = System.currentTimeMillis(); // Mark end time for sequential matrix multiplication
+		long timeDuration = calculateTimeDuration(startTime, endTime); // Calculate duration for sequential matrix
+																		// multiplication and print it
+		System.out.println("Time duration for sequential matrix multiplication: " + timeDuration + "ms");
 
-		System.out.println("\nTime taken for Sequential : " + (seqEnd - seqStart) / 1000000000 + " Seconds");
-		System.out.println("\nTime taken for Parallel : " + (parEnd - parStart) / 1000000000 + " Seconds");
+		startTime = System.currentTimeMillis(); // Mark star time for parallel matrix multiplication
+		ParallelMatrixVectorMultiply.parallelMultiply(a, b, MATRIX_SIZE);
+		endTime = System.currentTimeMillis(); // Mark end time for parallel matrix multiplication
+		timeDuration = calculateTimeDuration(startTime, endTime); // Calculate duration for parallel matrix
+																	// multiplication and print it
+		System.out.println("Time duration for parallel matrix multiplication: " + timeDuration + "ms");
 	}
 
-	// GenerateRandomMatrix method
+	/**
+	 * Calculate the time interval between given times and print the result
+	 * 
+	 * @param startTime is the start time
+	 * @param endTime   is the end time
+	 * @return time duration
+	 */
+	public static long calculateTimeDuration(long startTime, long endTime) {
+		return endTime - startTime; // Calculate the time duration in ms
 
+	}
+
+	/**
+	 * Populates a matrix of given size with randomly generated integers between
+	 * 0-10.
+	 * 
+	 * @param numRows number of rows
+	 * @param numCols number of cols
+	 * @return matrix
+	 */
 	private static double[][] generateRandomMatrix(int numRows, int numCols) {
 		double matrix[][] = new double[numRows][numCols];
 		for (int row = 0; row < numRows; row++) {
@@ -32,32 +55,21 @@ public class MatrixMultiply {
 		return matrix;
 	}
 
-	// GenerateRandomVector method
-
+	/**
+	 * Populates a vector of given size with randomly generated integers between
+	 * 0-10.
+	 * 
+	 * @param numRows number of rows
+	 * @return vector
+	 */
 	private static double[] generateRandomVector(int numRows) {
 		double vector[] = new double[numRows];
 		for (int row = 0; row < numRows; row++) {
+
 			vector[row] = (double) ((int) (Math.random() * 10.0));
+
 		}
 		return vector;
-	}
-
-	private static void printMatrix(double[][] matrix) {
-		for (int i = 0; i < matrix.length; i++) {
-			System.out.print("| ");
-			for (int j = 0; j < matrix[i].length; j++) {
-				System.out.print(matrix[i][j] + " ");
-			}
-			System.out.println("|");
-		}
-	}
-
-	private static void printVector(double[] vector) {
-		System.out.print("| ");
-		for (int i = 0; i < vector.length; i++) {
-			System.out.print(vector[i] + " ");
-		}
-		System.out.println("|");
 	}
 
 }
