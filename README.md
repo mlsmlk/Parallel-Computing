@@ -1,2 +1,2 @@
 # Parallel-Computing
-ECSE 420 -Parallel Computing Assignments
+Few assignments to practice the concepts of parallel computing.
